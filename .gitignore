@@ -20,3 +20,4 @@ target/
 .classpath
 .settings/
 .project
+native-libs

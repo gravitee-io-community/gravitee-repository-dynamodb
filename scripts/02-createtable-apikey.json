@@ -1,0 +1,39 @@
+{
+  "TableName": "GraviteeioApimApiKey",
+  "AttributeDefinitions": [
+    { "AttributeName": "key", "AttributeType": "S" },
+    { "AttributeName": "subscription", "AttributeType": "S" },
+    { "AttributeName": "plan", "AttributeType": "S" }
+  ],
+  "KeySchema": [
+    { "AttributeName": "key", "KeyType": "HASH" }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  },
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "ApiKeySubscription",
+      "KeySchema": [
+        { "AttributeName": "subscription", "KeyType": "HASH" }
+      ],
+      "Projection": { "ProjectionType": "ALL" },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    },
+    {
+      "IndexName": "ApiKeyPlan",
+      "KeySchema": [
+        { "AttributeName": "plan", "KeyType": "HASH" }
+      ],
+      "Projection": { "ProjectionType": "ALL" },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    }
+  ]
+}
