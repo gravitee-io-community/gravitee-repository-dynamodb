@@ -20,6 +20,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -56,6 +57,8 @@ public class DynamoDBApi {
     private String picture;
     @DynamoDBAttribute
     private Set<String> views;
+    @DynamoDBAttribute
+    private List<String> labels;
 
     public String getDefinition() {
         return definition;
@@ -159,6 +162,14 @@ public class DynamoDBApi {
 
     public void setViews(Set<String> views) {
         this.views = views;
+    }
+
+    public List<String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<String> labels) {
+        this.labels = labels;
     }
 
     @Override

@@ -165,6 +165,7 @@ public class DynamoDBApiRepository implements ApiRepository {
         api.setPicture(dynamoDBApi.getPicture());
         api.setGroup(dynamoDBApi.getGroup());
         api.setViews(dynamoDBApi.getViews());
+        api.setLabels(dynamoDBApi.getLabels());
 
         return api;
     }
@@ -190,6 +191,9 @@ public class DynamoDBApiRepository implements ApiRepository {
         dynamoDBApi.setGroup(api.getGroup());
         if (api.getViews() != null && !api.getViews().isEmpty()) {
             dynamoDBApi.setViews(api.getViews());
+        }
+        if (api.getLabels() != null && !api.getLabels().isEmpty()) {
+            dynamoDBApi.setLabels(api.getLabels());
         }
 
         return dynamoDBApi;
