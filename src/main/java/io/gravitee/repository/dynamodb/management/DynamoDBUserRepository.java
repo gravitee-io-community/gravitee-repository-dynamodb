@@ -127,9 +127,6 @@ public class DynamoDBUserRepository implements UserRepository {
         user.setFirstname(dynamoDBUser.getFirstname());
         user.setLastname(dynamoDBUser.getLastname());
         user.setPassword(dynamoDBUser.getPassword());
-        if (dynamoDBUser.getRoles() != null && !dynamoDBUser.getRoles().isEmpty()) {
-            user.setRoles(dynamoDBUser.getRoles());
-        }
         user.setCreatedAt(new Date(dynamoDBUser.getCreatedAt()));
         user.setUpdatedAt(new Date(dynamoDBUser.getUpdatedAt()));
         user.setPicture(dynamoDBUser.getPicture());
@@ -150,7 +147,6 @@ public class DynamoDBUserRepository implements UserRepository {
         dynamoDBUser.setFirstname(user.getFirstname());
         dynamoDBUser.setLastname(user.getLastname());
         dynamoDBUser.setPassword(user.getPassword());
-        dynamoDBUser.setRoles(user.getRoles());
         dynamoDBUser.setCreatedAt(user.getCreatedAt().getTime());
         dynamoDBUser.setUpdatedAt(user.getUpdatedAt().getTime());
         dynamoDBUser.setPicture(user.getPicture());

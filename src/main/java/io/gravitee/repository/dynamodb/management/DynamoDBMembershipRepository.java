@@ -27,6 +27,7 @@ import io.gravitee.repository.exceptions.TechnicalException;
 import io.gravitee.repository.management.api.MembershipRepository;
 import io.gravitee.repository.management.model.Membership;
 import io.gravitee.repository.management.model.MembershipReferenceType;
+import io.gravitee.repository.management.model.RoleScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,9 +104,10 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
     }
 
     @Override
-    public Set<Membership> findByReferenceAndMembershipType(MembershipReferenceType membershipReferenceType, String referenceId, String membershipType) throws TechnicalException {
+    public Set<Membership> findByReferenceAndRole(MembershipReferenceType membershipReferenceType, String referenceId, RoleScope roleScope, String roleName) throws TechnicalException {
         DynamoDBMembership dynamoDBMembership = new DynamoDBMembership();
         dynamoDBMembership.setReferenceId(referenceId);
+        String membershipType = convertRoleToType(roleScope, roleName);
         return mapper.query(DynamoDBMembership.class, new DynamoDBQueryExpression<DynamoDBMembership>().
                 withConsistentRead(false).
                 withHashKeyValues(dynamoDBMembership).
@@ -121,9 +123,10 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
     }
 
     @Override
-    public Set<Membership> findByReferencesAndMembershipType(MembershipReferenceType membershipReferenceType, List<String> referenceIds, String membershipType) throws TechnicalException {
+    public Set<Membership> findByReferencesAndRole(MembershipReferenceType membershipReferenceType, List<String> referenceIds, RoleScope roleScope, String roleName) throws TechnicalException {
         DynamoDBMembership dynamoDBMembership = new DynamoDBMembership();
         Set<Membership> result = new HashSet<>();
+        String membershipType = convertRoleToType(roleScope, roleName);
         referenceIds.forEach(referenceId -> {
                     dynamoDBMembership.setReferenceId(referenceId);
                     result.addAll(
@@ -161,10 +164,10 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
     }
 
     @Override
-    public Set<Membership> findByUserAndReferenceTypeAndMembershipType(String userId, MembershipReferenceType membershipReferenceType, String membershipType) throws TechnicalException {
+    public Set<Membership> findByUserAndReferenceTypeAndRole(String userId, MembershipReferenceType membershipReferenceType, RoleScope roleScope, String roleName) throws TechnicalException {
         return this.findByUserAndReferenceType(userId, membershipReferenceType).
                 stream().
-                filter(membership -> membership.getType().equals(membershipType)).
+                filter(membership -> (membership.getRoleScope() == roleScope.getId() && membership.getRoleName().equals(roleName))).
                 collect(Collectors.toSet());
     }
 
@@ -181,7 +184,7 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
         dynamoDBMembership.setReferenceId(membership.getReferenceId());
         dynamoDBMembership.setReferenceType(membership.getReferenceType().name());
         dynamoDBMembership.setId(getMembershipKey(dynamoDBMembership.getUserId(), dynamoDBMembership.getReferenceType(), dynamoDBMembership.getReferenceId()));
-        dynamoDBMembership.setType(membership.getType());
+        dynamoDBMembership.setType(convertRoleToType(membership.getRoleScope(), membership.getRoleName()));
         dynamoDBMembership.setCreatedAt(membership.getCreatedAt() != null ? membership.getCreatedAt().getTime() : new Date().getTime());
         dynamoDBMembership.setUpdatedAt(membership.getUpdatedAt() != null ? membership.getUpdatedAt().getTime() : dynamoDBMembership.getCreatedAt());
         return dynamoDBMembership;
@@ -195,9 +198,33 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
         membership.setUserId(dynamoDBMembership.getUserId());
         membership.setReferenceId(dynamoDBMembership.getReferenceId());
         membership.setReferenceType(MembershipReferenceType.valueOf(dynamoDBMembership.getReferenceType()));
-        membership.setType(dynamoDBMembership.getType());
+        String[] scopeAndName = convertTypeToRole(dynamoDBMembership.getType());
+        membership.setRoleScope(Integer.valueOf(scopeAndName[0]));
+        membership.setRoleName(scopeAndName[1]);
         membership.setCreatedAt(new Date(dynamoDBMembership.getCreatedAt()));
         membership.setUpdatedAt(new Date(dynamoDBMembership.getUpdatedAt()));
         return membership;
+    }
+
+    private String convertRoleToType(RoleScope roleScope, String roleName) {
+        if (roleName == null) {
+            return null;
+        }
+        return convertRoleToType(roleScope.getId(), roleName);
+    }
+
+    private String convertRoleToType(int roleScope, String roleName) {
+        return roleScope + ":" + roleName;
+    }
+
+    private String[] convertTypeToRole(String type) {
+        if(type == null) {
+            return null;
+        }
+        String[] role = type.split(":");
+        if (role .length != 2) {
+            return null;
+        }
+        return role;
     }
 }

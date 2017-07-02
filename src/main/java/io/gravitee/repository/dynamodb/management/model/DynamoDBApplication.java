@@ -44,6 +44,8 @@ public class DynamoDBApplication {
     private long createdAt;
     @DynamoDBAttribute
     private long updatedAt;
+    @DynamoDBAttribute
+    private String owner;
 
     public long getCreatedAt() {
         return createdAt;
