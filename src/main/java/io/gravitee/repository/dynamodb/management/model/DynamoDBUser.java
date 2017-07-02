@@ -40,8 +40,6 @@ public class DynamoDBUser {
     @DynamoDBAttribute
     private String lastname;
     @DynamoDBAttribute
-    private Set<String> roles = new HashSet<>();
-    @DynamoDBAttribute
     private String picture;
     @DynamoDBAttribute
     private String source;
@@ -87,13 +85,6 @@ public class DynamoDBUser {
     }
     public void setLastname(String lastname) {
         this.lastname = lastname;
-    }
-
-    public Set<String> getRoles() {
-        return roles;
-    }
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
     }
 
     public String getPicture() {

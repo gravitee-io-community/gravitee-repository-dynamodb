@@ -28,6 +28,7 @@ $ aws dynamodb create-table --endpoint-url http://localhost:8000 --cli-input-jso
 $ aws dynamodb create-table --endpoint-url http://localhost:8000 --cli-input-json file://13-createtable-tenant.json
 $ aws dynamodb create-table --endpoint-url http://localhost:8000 --cli-input-json file://14-createtable-user.json
 $ aws dynamodb create-table --endpoint-url http://localhost:8000 --cli-input-json file://15-createtable-view.json
+$ aws dynamodb create-table --endpoint-url http://localhost:8000 --cli-input-json file://16-createtable-role.json
 ```
 
 ## Configure

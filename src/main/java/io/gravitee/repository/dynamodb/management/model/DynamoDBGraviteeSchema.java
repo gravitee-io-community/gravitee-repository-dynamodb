@@ -68,4 +68,7 @@ public interface DynamoDBGraviteeSchema {
     //Metadatas
     String METADATA_TABLENAME = prefix + "Metadata";
     ProvisionedThroughput METADATA_PRO_THROU = new ProvisionedThroughput(5L, 5L);
+    //Roles
+    String ROLE_TABLENAME = prefix + "Role";
+    ProvisionedThroughput ROLE_PRO_THROU = new ProvisionedThroughput(5L, 5L);
 }
