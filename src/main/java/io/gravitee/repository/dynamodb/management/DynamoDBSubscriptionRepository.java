@@ -147,6 +147,10 @@ public class DynamoDBSubscriptionRepository implements SubscriptionRepository {
         subscription.setCreatedAt(new Date(dynamoDBSubscription.getCreatedAt()));
         subscription.setUpdatedAt(new Date(dynamoDBSubscription.getUpdatedAt()));
 
+        if (dynamoDBSubscription.getClosedAt() != 0) {
+            subscription.setClosedAt(new Date(dynamoDBSubscription.getClosedAt()));
+        }
+
         return subscription;
     }
 
@@ -171,6 +175,10 @@ public class DynamoDBSubscriptionRepository implements SubscriptionRepository {
         }
         dynamoDBSubscription.setCreatedAt(subscription.getCreatedAt().getTime());
         dynamoDBSubscription.setUpdatedAt(subscription.getUpdatedAt().getTime());
+
+        if (subscription.getClosedAt() != null) {
+            dynamoDBSubscription.setClosedAt(subscription.getClosedAt().getTime());
+        }
 
         return dynamoDBSubscription;
     }

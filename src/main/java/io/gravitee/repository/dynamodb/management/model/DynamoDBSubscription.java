@@ -50,6 +50,8 @@ public class DynamoDBSubscription {
     private long createdAt;
     @DynamoDBAttribute
     private long updatedAt;
+    @DynamoDBAttribute
+    private long closedAt;
 
     public String getId() {
         return id;
@@ -133,6 +135,14 @@ public class DynamoDBSubscription {
     }
     public void setUpdatedAt(long updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public long getClosedAt() {
+        return closedAt;
+    }
+
+    public void setClosedAt(long closedAt) {
+        this.closedAt = closedAt;
     }
 
     @Override
