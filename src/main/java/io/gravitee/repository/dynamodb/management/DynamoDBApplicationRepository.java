@@ -142,9 +142,9 @@ public class DynamoDBApplicationRepository implements ApplicationRepository {
             throw new TechnicalException("Unknown application " + application.getId());
         }
 
-        // Update, but don't change invariant other creation information
         oldApplication.setName(application.getName());
         oldApplication.setDescription(application.getDescription());
+        oldApplication.setCreatedAt(application.getCreatedAt().getTime());
         oldApplication.setUpdatedAt(application.getUpdatedAt().getTime());
         oldApplication.setType(application.getType());
         oldApplication.setGroup(application.getGroup());
