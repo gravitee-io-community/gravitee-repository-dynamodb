@@ -66,12 +66,12 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
     @Override
     public Membership update(Membership membership) throws TechnicalException {
         if (membership == null) {
-            throw new IllegalArgumentException("Trying to update null");
+            throw new IllegalStateException("Trying to update null");
         }
         DynamoDBMembership dynamoDBMembership = convert(membership);
         DynamoDBMembership load = mapper.load(DynamoDBMembership.class, dynamoDBMembership.getId());
         if (load == null) {
-            throw new IllegalArgumentException(String.format("No membership found with id [%s]", dynamoDBMembership.getId()));
+            throw new IllegalStateException(String.format("No membership found with id [%s]", dynamoDBMembership.getId()));
         }
         mapper.save(
                 dynamoDBMembership,

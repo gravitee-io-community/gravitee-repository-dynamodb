@@ -122,26 +122,24 @@ public class DynamoDBEventRepository implements EventRepository {
 
     @Override
     public Event update(Event event) throws TechnicalException {
-        if (event == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (event == null || event.getId() == null) {
+            throw new IllegalStateException("Event to update must have an id");
         }
-        Optional<Event> previousEvent = findById(event.getId());
-        if(previousEvent.isPresent()) {
 
-
-            mapper.save(
-                    convert(event),
-                    new DynamoDBSaveExpression().withExpectedEntry(
-                            "id",
-                            new ExpectedAttributeValue().
-                                    withValue(new AttributeValue().withS(event.getId())).
-                                    withExists(true)
-                    )
-            );
-            return event;
-        } else {
-            throw new TechnicalException("Event "+ event.getId() + " is unknown");
+        if (!findById(event.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No event found with id [%s]", event.getId()));
         }
+
+        mapper.save(
+                convert(event),
+                new DynamoDBSaveExpression().withExpectedEntry(
+                        "id",
+                        new ExpectedAttributeValue().
+                                withValue(new AttributeValue().withS(event.getId())).
+                                withExists(true)
+                )
+        );
+        return event;
     }
 
     @Override

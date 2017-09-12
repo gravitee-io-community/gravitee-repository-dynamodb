@@ -66,8 +66,12 @@ public class DynamoDBApiKeyRepository implements ApiKeyRepository{
 
     @Override
     public ApiKey update(ApiKey apiKey) throws TechnicalException {
-        if (apiKey == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (apiKey == null || apiKey.getKey() == null) {
+            throw new IllegalStateException("ApiKey to update must have an key");
+        }
+
+        if (!findById(apiKey.getKey()).isPresent()) {
+            throw new IllegalStateException(String.format("No apiKey found with key [%s]", apiKey.getKey()));
         }
         mapper.save(
                 convert(apiKey),

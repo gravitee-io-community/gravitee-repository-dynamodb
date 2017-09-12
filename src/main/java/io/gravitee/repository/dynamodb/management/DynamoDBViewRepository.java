@@ -76,8 +76,12 @@ public class DynamoDBViewRepository implements ViewRepository {
 
     @Override
     public View update(View view) throws TechnicalException {
-        if (view == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (view == null || view.getName() == null) {
+            throw new IllegalStateException("View to update must have a name");
+        }
+
+        if (!findById(view.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No view found with name [%s]", view.getId()));
         }
         try {
             mapper.save(

@@ -117,8 +117,12 @@ public class DynamoDBApiRepository implements ApiRepository {
 
     @Override
     public Api update(Api api) throws TechnicalException {
-        if (api == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (api == null || api.getId() == null) {
+            throw new IllegalStateException("Api to update must have an id");
+        }
+
+        if (!findById(api.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No api found with id [%s]", api.getId()));
         }
         mapper.save(
                 convert(api),

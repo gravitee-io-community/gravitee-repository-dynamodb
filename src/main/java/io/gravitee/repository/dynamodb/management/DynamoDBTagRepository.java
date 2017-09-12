@@ -75,8 +75,12 @@ public class DynamoDBTagRepository implements TagRepository {
 
     @Override
     public Tag update(Tag tag) throws TechnicalException {
-        if (tag == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (tag == null || tag.getName() == null) {
+            throw new IllegalStateException("Tag to update must have a name");
+        }
+
+        if (!findById(tag.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No tag found with name [%s]", tag.getId()));
         }
         mapper.save(
                 convert(tag),
