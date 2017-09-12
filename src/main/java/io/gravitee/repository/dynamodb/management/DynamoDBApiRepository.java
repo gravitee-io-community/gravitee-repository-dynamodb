@@ -17,7 +17,9 @@ package io.gravitee.repository.dynamodb.management;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
+import com.amazonaws.util.ImmutableMapParameter;
 import io.gravitee.repository.dynamodb.management.model.DynamoDBApi;
 import io.gravitee.repository.exceptions.TechnicalException;
 import io.gravitee.repository.management.api.ApiRepository;
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.amazonaws.services.dynamodbv2.model.ComparisonOperator.CONTAINS;
 
 /**
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
@@ -78,11 +82,11 @@ public class DynamoDBApiRepository implements ApiRepository {
         if (groupIds !=null && !groupIds.isEmpty()) {
             Set<Api> result = new HashSet<>();
             for (String groupId : groupIds) {
-                DynamoDBApi dynamoDBApi = new DynamoDBApi();
-                dynamoDBApi.setGroup(groupId);
-                result.addAll(mapper.query(DynamoDBApi.class, new DynamoDBQueryExpression<DynamoDBApi>().
-                        withConsistentRead(false).
-                        withHashKeyValues(dynamoDBApi)).
+                result.addAll(mapper.scan(DynamoDBApi.class,
+                        new DynamoDBScanExpression().
+                                withFilterExpression("contains(groups, :g)").
+                                withExpressionAttributeValues(ImmutableMapParameter.of(
+                                        ":g", new AttributeValue().withS(groupId)))).
                         stream().
                         map(this::convert).
                         collect(Collectors.toSet()));
@@ -117,8 +121,12 @@ public class DynamoDBApiRepository implements ApiRepository {
 
     @Override
     public Api update(Api api) throws TechnicalException {
-        if (api == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (api == null || api.getId() == null) {
+            throw new IllegalStateException("Api to update must have an id");
+        }
+
+        if (!findById(api.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No api found with id [%s]", api.getId()));
         }
         mapper.save(
                 convert(api),
@@ -163,7 +171,7 @@ public class DynamoDBApiRepository implements ApiRepository {
         api.setVisibility(Visibility.valueOf(dynamoDBApi.getVisibility()));
         api.setLifecycleState(LifecycleState.valueOf(dynamoDBApi.getLifecycleState()));
         api.setPicture(dynamoDBApi.getPicture());
-        api.setGroup(dynamoDBApi.getGroup());
+        api.setGroups(dynamoDBApi.getGroups());
         api.setViews(dynamoDBApi.getViews());
         api.setLabels(dynamoDBApi.getLabels());
 
@@ -188,7 +196,9 @@ public class DynamoDBApiRepository implements ApiRepository {
         dynamoDBApi.setVisibility(api.getVisibility().name());
         dynamoDBApi.setLifecycleState(api.getLifecycleState().name());
         dynamoDBApi.setPicture(api.getPicture());
-        dynamoDBApi.setGroup(api.getGroup());
+        if (api.getGroups() != null && !api.getGroups().isEmpty()) {
+            dynamoDBApi.setGroups(api.getGroups());
+        }
         if (api.getViews() != null && !api.getViews().isEmpty()) {
             dynamoDBApi.setViews(api.getViews());
         }

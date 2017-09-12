@@ -21,6 +21,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
@@ -36,16 +37,14 @@ public class DynamoDBApplication {
     private String description;
     @DynamoDBAttribute
     private String type;
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "ApplicationGroup")
-    private String group;
+    @DynamoDBAttribute
+    private Set<String> groups;
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "ApplicationStatus")
     private String status;
     @DynamoDBAttribute
     private long createdAt;
     @DynamoDBAttribute
     private long updatedAt;
-    @DynamoDBAttribute
-    private String owner;
 
     public long getCreatedAt() {
         return createdAt;
@@ -82,11 +81,11 @@ public class DynamoDBApplication {
         this.type = type;
     }
 
-    public String getGroup() {
-        return group;
+    public Set<String> getGroups() {
+        return groups;
     }
-    public void setGroup(String group) {
-        this.group = group;
+    public void setGroups(Set<String> groups) {
+        this.groups = groups;
     }
 
     public long getUpdatedAt() {
@@ -123,7 +122,7 @@ public class DynamoDBApplication {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", type'" + type + '\'' +
-                ", group='" + group + '\'' +
+                ", groups='" + groups + '\'' +
                 ", status='" + status + '\'' +
                 '}';
     }

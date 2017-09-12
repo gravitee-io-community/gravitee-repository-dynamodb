@@ -95,8 +95,12 @@ public class DynamoDBSubscriptionRepository implements SubscriptionRepository {
 
     @Override
     public Subscription update(Subscription subscription) throws TechnicalException {
-        if (subscription == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (subscription == null || subscription.getId() == null) {
+            throw new IllegalStateException("Subscription to update must have an id");
+        }
+
+        if (!findById(subscription.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No subscription found with id [%s]", subscription.getId()));
         }
         mapper.save(
                 convert(subscription),

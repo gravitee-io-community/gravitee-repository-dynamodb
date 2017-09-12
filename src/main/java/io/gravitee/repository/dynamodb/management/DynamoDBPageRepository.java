@@ -138,11 +138,11 @@ public class DynamoDBPageRepository implements PageRepository {
     @Override
     public Page update(Page page) throws TechnicalException {
         if (page == null) {
-            throw new IllegalArgumentException("Trying to update null");
+            throw new IllegalStateException("Page must not be null");
         }
-        DynamoDBPage load = mapper.load(DynamoDBPage.class, page.getId());
-        if (load == null) {
-            throw new IllegalArgumentException(String.format("No page found with id [%s]", page.getId()));
+
+        if (!findById(page.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No page found with id [%s]", page.getId()));
         }
         mapper.save(
                 convert(page),

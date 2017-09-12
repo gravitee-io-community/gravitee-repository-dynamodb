@@ -45,8 +45,8 @@ public class DynamoDBApi {
     private String lifecycleState;
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "ApiVisibility")
     private String visibility;
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "ApiGroup")
-    private String group;
+    @DynamoDBAttribute
+    private Set<String> groups;
     @DynamoDBAttribute
     private long deployedAt;
     @DynamoDBAttribute
@@ -124,12 +124,12 @@ public class DynamoDBApi {
         this.visibility = visibility;
     }
 
-    public String getGroup() {
-        return group;
+    public Set<String> getGroups() {
+        return groups;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public void setGroups(Set<String> groups) {
+        this.groups = groups;
     }
 
     public long getCreatedAt() {

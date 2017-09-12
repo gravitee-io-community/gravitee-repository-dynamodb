@@ -18,6 +18,7 @@ package io.gravitee.repository.dynamodb.management;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
+import com.amazonaws.util.ImmutableMapParameter;
 import io.gravitee.repository.dynamodb.management.model.DynamoDBApplication;
 import io.gravitee.repository.exceptions.TechnicalException;
 import io.gravitee.repository.management.api.ApplicationRepository;
@@ -56,7 +57,8 @@ public class DynamoDBApplicationRepository implements ApplicationRepository {
             return result;
         } else {
             PaginatedScanList<DynamoDBApplication> dynamoDBApplications = mapper.scan(DynamoDBApplication.class, new DynamoDBScanExpression());
-            return dynamoDBApplications.stream().map(this::convert).collect(Collectors.toSet());
+            Set<Application> collect = dynamoDBApplications.stream().map(this::convert).collect(Collectors.toSet());
+            return collect;
         }
     }
 
@@ -78,21 +80,19 @@ public class DynamoDBApplicationRepository implements ApplicationRepository {
     @Override
     public Set<Application> findByGroups(List<String> groupIds, ApplicationStatus... applicationStatuses) throws TechnicalException {
         if (groupIds !=null && !groupIds.isEmpty()) {
-            final List<String> status =
-                    applicationStatuses == null ?
-                    new ArrayList<>() :
-                    Arrays.stream(applicationStatuses).map(Enum::name).collect(Collectors.toList());
+            applicationStatuses = applicationStatuses == null || applicationStatuses.length == 0 ? ApplicationStatus.values() : applicationStatuses;
+            List<String> status = Arrays.stream(applicationStatuses).map(Enum::name).collect(Collectors.toList());
             Set<Application> result = new HashSet<>();
             for (String groupId : groupIds) {
-                DynamoDBApplication dynamoDBApplication = new DynamoDBApplication();
-                dynamoDBApplication.setGroup(groupId);
-                result.addAll(mapper.query(DynamoDBApplication.class, new DynamoDBQueryExpression<DynamoDBApplication>().
-                        withConsistentRead(false).
-                        withHashKeyValues(dynamoDBApplication)).
-                        stream().
-                        filter(app -> status.isEmpty() || status.contains(app.getStatus())).
-                        map(this::convert).
-                        collect(Collectors.toSet()));
+                result.addAll(mapper.scan(DynamoDBApplication.class,
+                        new DynamoDBScanExpression().
+                                withFilterExpression("contains(groups, :g)").
+                                withExpressionAttributeValues(ImmutableMapParameter.of(
+                                        ":g", new AttributeValue().withS(groupId))))
+                        .stream()
+                        .filter(dynamoDBApplication -> status.contains(dynamoDBApplication.getStatus()))
+                        .map(this::convert)
+                        .collect(Collectors.toSet()));
             }
             return result;
         } else {
@@ -134,12 +134,12 @@ public class DynamoDBApplicationRepository implements ApplicationRepository {
     @Override
     public Application update(Application application) throws TechnicalException {
         if (application == null) {
-            throw new IllegalArgumentException("Trying to update null");
+            throw new IllegalStateException("Trying to update null");
         }
 
         DynamoDBApplication oldApplication = mapper.load(DynamoDBApplication.class, application.getId());
         if(oldApplication == null) {
-            throw new TechnicalException("Unknown application " + application.getId());
+            throw new IllegalStateException("Unknown application " + application.getId());
         }
 
         oldApplication.setName(application.getName());
@@ -147,7 +147,7 @@ public class DynamoDBApplicationRepository implements ApplicationRepository {
         oldApplication.setCreatedAt(application.getCreatedAt().getTime());
         oldApplication.setUpdatedAt(application.getUpdatedAt().getTime());
         oldApplication.setType(application.getType());
-        oldApplication.setGroup(application.getGroup());
+        oldApplication.setGroups(application.getGroups());
         oldApplication.setStatus(application.getStatus().name());
 
         mapper.save(
@@ -185,7 +185,7 @@ public class DynamoDBApplicationRepository implements ApplicationRepository {
         application.setUpdatedAt(new Date(dynamoDBApplication.getUpdatedAt()));
         application.setDescription(dynamoDBApplication.getDescription());
         application.setType(dynamoDBApplication.getType());
-        application.setGroup(dynamoDBApplication.getGroup());
+        application.setGroups(dynamoDBApplication.getGroups());
         application.setStatus(ApplicationStatus.valueOf(dynamoDBApplication.getStatus()));
         return application;
     }
@@ -199,7 +199,7 @@ public class DynamoDBApplicationRepository implements ApplicationRepository {
         dynamoDBApplication.setUpdatedAt(application.getUpdatedAt().getTime());
         dynamoDBApplication.setDescription(application.getDescription());
         dynamoDBApplication.setType(application.getType());
-        dynamoDBApplication.setGroup(application.getGroup());
+        dynamoDBApplication.setGroups(application.getGroups());
         dynamoDBApplication.setStatus(application.getStatus().name());
 
         return dynamoDBApplication;

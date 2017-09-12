@@ -2,7 +2,6 @@
   "TableName": "GraviteeioApimApi",
   "AttributeDefinitions": [
     { "AttributeName": "id", "AttributeType": "S" },
-    { "AttributeName": "group", "AttributeType": "S" },
     { "AttributeName": "visibility", "AttributeType": "S" }
   ],
   "KeySchema": [
@@ -17,17 +16,6 @@
       "IndexName": "ApiVisibility",
       "KeySchema": [
         { "AttributeName": "visibility", "KeyType": "HASH" }
-      ],
-      "Projection": { "ProjectionType": "ALL" },
-      "ProvisionedThroughput": {
-        "ReadCapacityUnits": 5,
-        "WriteCapacityUnits": 5
-      }
-    },
-    {
-      "IndexName": "ApiGroup",
-      "KeySchema": [
-        { "AttributeName": "group", "KeyType": "HASH" }
       ],
       "Projection": { "ProjectionType": "ALL" },
       "ProvisionedThroughput": {

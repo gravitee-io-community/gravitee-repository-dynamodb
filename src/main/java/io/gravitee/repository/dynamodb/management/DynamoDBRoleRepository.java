@@ -77,8 +77,12 @@ public class DynamoDBRoleRepository implements RoleRepository {
 
     @Override
     public Role update(Role role) throws TechnicalException {
-        if (role == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (role == null || role.getScope() == null || role.getName() == null) {
+            throw new IllegalStateException("Role to update must not be null");
+        }
+
+        if (!findById(role.getScope(), role.getName()).isPresent()) {
+            throw new IllegalStateException(String.format("No role found with scope [%s] and name [%s]", role.getScope(), role.getName()));
         }
         String id = convertId(role.getScope(), role.getName());
         try {

@@ -82,31 +82,15 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                         )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBGroup.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.GROUP_PRO_THROU).
-                withGlobalSecondaryIndexes(Collections.singletonList(
-                        new GlobalSecondaryIndex().
-                                withIndexName("GroupType").
-                                withKeySchema(
-                                        new KeySchemaElement().withAttributeName("type").withKeyType(KeyType.HASH)
-                                ).
-                                withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.GROUP_PRO_THROU)
-                )));
+                withProvisionedThroughput(DynamoDBGraviteeSchema.GROUP_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBApplication.class).
                 withProvisionedThroughput(DynamoDBGraviteeSchema.APPLICATION_PRO_THROU).
-                withGlobalSecondaryIndexes(Arrays.asList(
+                withGlobalSecondaryIndexes(Collections.singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("ApplicationStatus").
                                 withKeySchema(
                                         new KeySchemaElement().withAttributeName("status").withKeyType(KeyType.HASH)
-                                ).
-                                withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.APPLICATION_PRO_THROU),
-                        new GlobalSecondaryIndex().
-                                withIndexName("ApplicationGroup").
-                                withKeySchema(
-                                        new KeySchemaElement().withAttributeName("group").withKeyType(KeyType.HASH)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
                                 withProvisionedThroughput(DynamoDBGraviteeSchema.APPLICATION_PRO_THROU)
@@ -115,18 +99,11 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBApi.class).
                 withProvisionedThroughput(DynamoDBGraviteeSchema.API_PRO_THROU).
-                withGlobalSecondaryIndexes(Arrays.asList(
+                withGlobalSecondaryIndexes(Collections.singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("ApiVisibility").
                                 withKeySchema(
                                         new KeySchemaElement().withAttributeName("visibility").withKeyType(KeyType.HASH)
-                                ).
-                                withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.API_PRO_THROU),
-                        new GlobalSecondaryIndex().
-                                withIndexName("ApiGroup").
-                                withKeySchema(
-                                        new KeySchemaElement().withAttributeName("group").withKeyType(KeyType.HASH)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
                                 withProvisionedThroughput(DynamoDBGraviteeSchema.API_PRO_THROU)

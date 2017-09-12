@@ -18,6 +18,7 @@ package io.gravitee.repository.dynamodb.management.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
@@ -39,7 +40,7 @@ public class DynamoDBMembership {
     private String referenceId;
 
     @DynamoDBAttribute
-    private String type;
+    private Set<String> roles;
 
     @DynamoDBAttribute
     private long createdAt;
@@ -76,11 +77,11 @@ public class DynamoDBMembership {
         this.referenceId = referenceId;
     }
 
-    public String getType() {
-        return type;
+    public Set<String> getRoles() {
+        return roles;
     }
-    public void setType(String type) {
-        this.type = type;
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 
     public long getCreatedAt() {
@@ -102,9 +103,7 @@ public class DynamoDBMembership {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DynamoDBMembership that = (DynamoDBMembership) o;
-        return Objects.equals(userId, that.userId) &&
-                Objects.equals(referenceId, that.referenceId) &&
-                Objects.equals(referenceType, that.referenceType);
+        return Objects.equals(id, that.id);
     }
 
     @Override
@@ -119,7 +118,7 @@ public class DynamoDBMembership {
                 ", userId='" + userId + '\'' +
                 ", referenceType='" + referenceType + '\'' +
                 ", referenceId='" + referenceId + '\'' +
-                ", type='" + type + '\'' +
+                ", roles='" + roles + '\'' +
                 '}';
     }
 }
