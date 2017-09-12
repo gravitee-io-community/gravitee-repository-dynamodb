@@ -87,8 +87,12 @@ public class DynamoDBPlanRepository implements PlanRepository {
 
     @Override
     public Plan update(Plan plan) throws TechnicalException {
-        if (plan == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (plan == null || plan.getId() == null) {
+            throw new IllegalStateException("Plan to update must have an id");
+        }
+
+        if (!findById(plan.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No plan found with id [%s]", plan.getId()));
         }
         mapper.save(
                 convert(plan),

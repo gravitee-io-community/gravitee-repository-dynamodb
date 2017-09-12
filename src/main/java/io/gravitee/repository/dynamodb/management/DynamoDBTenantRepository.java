@@ -75,8 +75,12 @@ public class DynamoDBTenantRepository implements TenantRepository {
 
     @Override
     public Tenant update(Tenant tenant) throws TechnicalException {
-        if (tenant == null) {
-            throw new IllegalArgumentException("Trying to update null");
+        if (tenant == null || tenant.getName() == null) {
+            throw new IllegalStateException("Tenant to update must have a name");
+        }
+
+        if (!findById(tenant.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No tenant found with name [%s]", tenant.getId()));
         }
         mapper.save(
                 convert(tenant),

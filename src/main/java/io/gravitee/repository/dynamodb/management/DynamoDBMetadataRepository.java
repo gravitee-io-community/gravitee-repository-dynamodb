@@ -64,21 +64,26 @@ public class DynamoDBMetadataRepository implements MetadataRepository {
     }
 
     @Override
-    public Metadata update(Metadata item) throws TechnicalException {
-        if (item == null) {
-            throw new IllegalArgumentException("Trying to update null");
+    public Metadata update(Metadata metadata) throws TechnicalException {
+        if (metadata == null || metadata.getName() == null) {
+            throw new IllegalStateException("Metadata to update must have a name");
+        }
+
+        if (!findById(metadata.getKey(), metadata.getReferenceId(), metadata.getReferenceType()).isPresent()) {
+            throw new IllegalStateException(String.format("No metadata found with key [%s], reference id [%s] and type [%s]",
+                    metadata.getKey(), metadata.getReferenceId(), metadata.getReferenceType()));
         }
         try {
             mapper.save(
-                    convert(item),
+                    convert(metadata),
                     new DynamoDBSaveExpression().withExpectedEntry(
                             "id",
                             new ExpectedAttributeValue().
-                                    withValue(new AttributeValue().withS(generateId(item))).
+                                    withValue(new AttributeValue().withS(generateId(metadata))).
                                     withExists(true)
                     )
             );
-            return item;
+            return metadata;
         } catch (ConditionalCheckFailedException e) {
             LOGGER.error(e.getMessage(), e);
             return null;

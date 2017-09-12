@@ -32,14 +32,14 @@ import java.util.Objects;
 public class DynamoDBGroup {
     @DynamoDBHashKey
     private String id;
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "GroupType")
-    private String type;
     @DynamoDBAttribute
     private String name;
     @DynamoDBAttribute
     private Date createdAt;
     @DynamoDBAttribute
     private Date updatedAt;
+    @DynamoDBAttribute
+    private List<String> eventRules;
     @DynamoDBAttribute
     private List<String> administrators;
 
@@ -48,13 +48,6 @@ public class DynamoDBGroup {
     }
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getName() {
@@ -76,6 +69,13 @@ public class DynamoDBGroup {
     }
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<String> getEventRules() {
+        return eventRules;
+    }
+    public void setEventRules(List<String> eventRules) {
+        this.eventRules = eventRules;
     }
 
     public List<String> getAdministrators() {
@@ -102,7 +102,6 @@ public class DynamoDBGroup {
     public String toString() {
         return "DynamoDBGroup{" +
                 "id='" + id + '\'' +
-                ", type='" + type + '\'' +
                 ", name='" + name + '\'' +
                 '}';
     }

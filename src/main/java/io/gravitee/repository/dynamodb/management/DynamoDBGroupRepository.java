@@ -22,12 +22,12 @@ import io.gravitee.repository.dynamodb.management.model.DynamoDBGroup;
 import io.gravitee.repository.exceptions.TechnicalException;
 import io.gravitee.repository.management.api.GroupRepository;
 import io.gravitee.repository.management.model.Group;
+import io.gravitee.repository.management.model.GroupEvent;
+import io.gravitee.repository.management.model.GroupEventRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,18 +41,6 @@ public class DynamoDBGroupRepository implements GroupRepository {
     private DynamoDBMapper mapper;
 
     @Override
-    public Set<Group> findByType(Group.Type type) throws TechnicalException {
-        DynamoDBGroup dynamoDBGroup = new DynamoDBGroup();
-        dynamoDBGroup.setType(type.name());
-        return mapper.query(DynamoDBGroup.class, new DynamoDBQueryExpression<DynamoDBGroup>().
-                withConsistentRead(false).
-                withHashKeyValues(dynamoDBGroup)).
-                stream().
-                map(this::convert).
-                collect(Collectors.toSet());
-    }
-
-    @Override
     public Set<Group> findAll() throws TechnicalException {
         PaginatedScanList<DynamoDBGroup> dynamoDBGroups = mapper.scan(DynamoDBGroup.class, new DynamoDBScanExpression());
         return dynamoDBGroups.stream().map(this::convert).collect(Collectors.toSet());
@@ -62,6 +50,21 @@ public class DynamoDBGroupRepository implements GroupRepository {
     public Optional<Group> findById(String id) throws TechnicalException {
         DynamoDBGroup load = mapper.load(DynamoDBGroup.class, id);
         return Optional.ofNullable(convert(load));
+    }
+
+    @Override
+    public Set<Group> findByIds(Set<String> ids) throws TechnicalException {
+        Map<String, List<Object>> result = mapper.batchLoad(ids.stream().map(id -> {
+            DynamoDBGroup group = new DynamoDBGroup();
+            group.setId(id);
+            return group;
+        }).collect(Collectors.toSet()));
+
+        if (result != null && !result.isEmpty()) {
+            List<Object> groups = result.entrySet().iterator().next().getValue();
+            return groups.stream().map(o -> convert((DynamoDBGroup)o)).collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
     }
 
     @Override
@@ -85,7 +88,11 @@ public class DynamoDBGroupRepository implements GroupRepository {
     @Override
     public Group update(Group group) throws TechnicalException {
         if (group == null) {
-            throw new IllegalArgumentException("Trying to update null");
+            throw new IllegalStateException("Group must not be null");
+        }
+
+        if (!findById(group.getId()).isPresent()) {
+            throw new IllegalStateException(String.format("No group found with id [%s]", group.getId()));
         }
         mapper.save(
                 convert(group),
@@ -116,9 +123,15 @@ public class DynamoDBGroupRepository implements GroupRepository {
         Group group = new Group();
         group.setId(dynamoDBGroup.getId());
         group.setName(dynamoDBGroup.getName());
-        group.setType(Group.Type.valueOf(dynamoDBGroup.getType()));
         group.setCreatedAt(dynamoDBGroup.getCreatedAt());
         group.setUpdatedAt(dynamoDBGroup.getUpdatedAt());
+        if (dynamoDBGroup.getEventRules() != null) {
+            group.setEventRules(
+                    dynamoDBGroup.getEventRules().
+                            stream().
+                            map(ev -> new GroupEventRule(GroupEvent.valueOf(ev))).
+                            collect(Collectors.toList()));
+        }
         group.setAdministrators(dynamoDBGroup.getAdministrators()==null ? Collections.emptyList() : dynamoDBGroup.getAdministrators());
         return group;
     }
@@ -130,9 +143,15 @@ public class DynamoDBGroupRepository implements GroupRepository {
         DynamoDBGroup dynamoDBGroup = new DynamoDBGroup();
         dynamoDBGroup.setId(group.getId());
         dynamoDBGroup.setName(group.getName());
-        dynamoDBGroup.setType(group.getType().name());
         dynamoDBGroup.setCreatedAt(group.getCreatedAt());
         dynamoDBGroup.setUpdatedAt(group.getUpdatedAt());
+        if (group.getEventRules() != null) {
+            dynamoDBGroup.setEventRules(
+                    group.getEventRules().
+                            stream().
+                            map(evr -> evr.getEvent().name()).
+                            collect(Collectors.toList()));
+        }
         if (group.getAdministrators() != null && !group.getAdministrators().isEmpty()) {
             dynamoDBGroup.setAdministrators(group.getAdministrators());
         }

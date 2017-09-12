@@ -2,7 +2,6 @@
   "TableName": "GraviteeioApimApplication",
   "AttributeDefinitions": [
     { "AttributeName": "id", "AttributeType": "S" },
-    { "AttributeName": "group", "AttributeType": "S" },
     { "AttributeName": "status", "AttributeType": "S" }
   ],
   "KeySchema": [
@@ -13,17 +12,6 @@
     "WriteCapacityUnits": 5
   },
   "GlobalSecondaryIndexes": [
-    {
-      "IndexName": "ApplicationGroup",
-      "KeySchema": [
-        { "AttributeName": "group", "KeyType": "HASH" }
-      ],
-      "Projection": { "ProjectionType": "ALL" },
-      "ProvisionedThroughput": {
-        "ReadCapacityUnits": 5,
-        "WriteCapacityUnits": 5
-      }
-    },
     {
       "IndexName": "ApplicationStatus",
       "KeySchema": [

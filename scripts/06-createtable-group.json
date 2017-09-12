@@ -1,8 +1,7 @@
 {
   "TableName": "GraviteeioApimGroup",
   "AttributeDefinitions": [
-    { "AttributeName": "id", "AttributeType": "S" },
-    { "AttributeName": "type", "AttributeType": "S" }
+    { "AttributeName": "id", "AttributeType": "S" }
   ],
   "KeySchema": [
     { "AttributeName": "id", "KeyType": "HASH" }
@@ -10,18 +9,5 @@
   "ProvisionedThroughput": {
     "ReadCapacityUnits": 5,
     "WriteCapacityUnits": 5
-  },
-  "GlobalSecondaryIndexes": [
-    {
-      "IndexName": "GroupType",
-      "KeySchema": [
-        { "AttributeName": "type", "KeyType": "HASH" }
-      ],
-      "Projection": { "ProjectionType": "ALL" },
-      "ProvisionedThroughput": {
-        "ReadCapacityUnits": 5,
-        "WriteCapacityUnits": 5
-      }
-    }
-  ]
+  }
 }

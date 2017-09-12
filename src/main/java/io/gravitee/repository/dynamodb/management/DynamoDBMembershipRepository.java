@@ -66,12 +66,12 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
     @Override
     public Membership update(Membership membership) throws TechnicalException {
         if (membership == null) {
-            throw new IllegalArgumentException("Trying to update null");
+            throw new IllegalStateException("Trying to update null");
         }
         DynamoDBMembership dynamoDBMembership = convert(membership);
         DynamoDBMembership load = mapper.load(DynamoDBMembership.class, dynamoDBMembership.getId());
         if (load == null) {
-            throw new IllegalArgumentException(String.format("No membership found with id [%s]", dynamoDBMembership.getId()));
+            throw new IllegalStateException(String.format("No membership found with id [%s]", dynamoDBMembership.getId()));
         }
         mapper.save(
                 dynamoDBMembership,
@@ -104,6 +104,21 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
     }
 
     @Override
+    public Set<Membership> findByIds(String userId, MembershipReferenceType referenceType, Set<String> referenceIds) throws TechnicalException {
+        Map<String, List<Object>> result = mapper.batchLoad(referenceIds.stream().map(referenceId -> {
+            DynamoDBMembership dynamoDBMembership = new DynamoDBMembership();
+            dynamoDBMembership.setId(getMembershipKey(userId, referenceType.name(), referenceId));
+            return dynamoDBMembership;
+        }).collect(Collectors.toSet()));
+
+        if (result != null && !result.isEmpty()) {
+            List<Object> memberships = result.entrySet().iterator().next().getValue();
+            return memberships.stream().map(o -> convert((DynamoDBMembership)o)).collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    @Override
     public Set<Membership> findByReferenceAndRole(MembershipReferenceType membershipReferenceType, String referenceId, RoleScope roleScope, String roleName) throws TechnicalException {
         DynamoDBMembership dynamoDBMembership = new DynamoDBMembership();
         dynamoDBMembership.setReferenceId(referenceId);
@@ -117,7 +132,7 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
                                 withS(membershipReferenceType.name())))).
 
                 stream().
-                filter(membership -> membership.getType().equals(membershipType) || membershipType == null).
+                filter(membership -> membershipType == null || membership.getRoles().contains(membershipType)).
                 map(this::convert).
                 collect(Collectors.toSet());
     }
@@ -138,7 +153,7 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
                                             withAttributeValueList(new AttributeValue().
                                                     withS(membershipReferenceType.name())))).
                                     stream().
-                                    filter(membership -> membership.getType().equals(membershipType) || membershipType == null).
+                                    filter(membership -> membershipType == null || membership.getRoles().contains(membershipType)).
                                     map(this::convert).
                                     collect(Collectors.toSet()));
                 }
@@ -165,9 +180,19 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
 
     @Override
     public Set<Membership> findByUserAndReferenceTypeAndRole(String userId, MembershipReferenceType membershipReferenceType, RoleScope roleScope, String roleName) throws TechnicalException {
-        return this.findByUserAndReferenceType(userId, membershipReferenceType).
+        String role = this.convertRoleToType(roleScope, roleName);
+        DynamoDBMembership dynamoDBMembership = new DynamoDBMembership();
+        dynamoDBMembership.setUserId(userId);
+        return mapper.query(DynamoDBMembership.class, new DynamoDBQueryExpression<DynamoDBMembership>().
+                withConsistentRead(false).
+                withHashKeyValues(dynamoDBMembership).
+                withRangeKeyCondition("referenceType", new Condition().
+                        withComparisonOperator(ComparisonOperator.EQ).
+                        withAttributeValueList(new AttributeValue().
+                                withS(membershipReferenceType.name())))).
                 stream().
-                filter(membership -> (membership.getRoleScope() == roleScope.getId() && membership.getRoleName().equals(roleName))).
+                filter(membership -> membership.getRoles() != null && !membership.getRoles().isEmpty() && membership.getRoles().contains(role)).
+                map(this::convert).
                 collect(Collectors.toSet());
     }
 
@@ -184,9 +209,16 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
         dynamoDBMembership.setReferenceId(membership.getReferenceId());
         dynamoDBMembership.setReferenceType(membership.getReferenceType().name());
         dynamoDBMembership.setId(getMembershipKey(dynamoDBMembership.getUserId(), dynamoDBMembership.getReferenceType(), dynamoDBMembership.getReferenceId()));
-        dynamoDBMembership.setType(convertRoleToType(membership.getRoleScope(), membership.getRoleName()));
-        dynamoDBMembership.setCreatedAt(membership.getCreatedAt() != null ? membership.getCreatedAt().getTime() : new Date().getTime());
-        dynamoDBMembership.setUpdatedAt(membership.getUpdatedAt() != null ? membership.getUpdatedAt().getTime() : dynamoDBMembership.getCreatedAt());
+        if (membership.getRoles() != null) {
+            Set<String> roles = new HashSet<>(membership.getRoles().size());
+            for (Map.Entry<Integer, String> roleEntry : membership.getRoles().entrySet()) {
+                roles.add(convertRoleToType(roleEntry.getKey(), roleEntry.getValue()));
+            }
+
+            dynamoDBMembership.setRoles(roles);
+        }
+        dynamoDBMembership.setCreatedAt(membership.getCreatedAt() != null ? membership.getCreatedAt().getTime() : 0);
+        dynamoDBMembership.setUpdatedAt(membership.getUpdatedAt() != null ? membership.getUpdatedAt().getTime() : 0);
         return dynamoDBMembership;
     }
 
@@ -198,11 +230,16 @@ public class DynamoDBMembershipRepository implements MembershipRepository {
         membership.setUserId(dynamoDBMembership.getUserId());
         membership.setReferenceId(dynamoDBMembership.getReferenceId());
         membership.setReferenceType(MembershipReferenceType.valueOf(dynamoDBMembership.getReferenceType()));
-        String[] scopeAndName = convertTypeToRole(dynamoDBMembership.getType());
-        membership.setRoleScope(Integer.valueOf(scopeAndName[0]));
-        membership.setRoleName(scopeAndName[1]);
-        membership.setCreatedAt(new Date(dynamoDBMembership.getCreatedAt()));
-        membership.setUpdatedAt(new Date(dynamoDBMembership.getUpdatedAt()));
+        if (dynamoDBMembership.getRoles() != null) {
+            Map<Integer, String> roles = new HashMap<>(dynamoDBMembership.getRoles().size());
+            for (String roleAsString : dynamoDBMembership.getRoles()) {
+                String[] role = convertTypeToRole(roleAsString);
+                roles.put(Integer.valueOf(role[0]), role[1]);
+            }
+            membership.setRoles(roles);
+        }
+        membership.setCreatedAt(dynamoDBMembership.getCreatedAt() == 0 ? null : new Date(dynamoDBMembership.getCreatedAt()));
+        membership.setUpdatedAt(dynamoDBMembership.getUpdatedAt() == 0 ? null : new Date(dynamoDBMembership.getUpdatedAt()));
         return membership;
     }
 
