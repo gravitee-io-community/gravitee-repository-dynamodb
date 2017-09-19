@@ -28,7 +28,7 @@
 
     <groupId>io.gravitee.repository</groupId>
     <artifactId>gravitee-repository-dynamodb</artifactId>
-    <version>1.9.0-SNAPSHOT</version>
+    <version>1.9.0</version>
     <name>Gravitee.io APIM - Repository - AWS DynamoDB</name>
 
     <properties>
