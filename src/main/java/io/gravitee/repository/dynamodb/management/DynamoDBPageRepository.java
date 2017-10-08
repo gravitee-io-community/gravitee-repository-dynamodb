@@ -182,6 +182,7 @@ public class DynamoDBPageRepository implements PageRepository {
         page.setPublished(dynamoDBPage.isPublished());
         page.setType(PageType.valueOf(dynamoDBPage.getType()));
         page.setHomepage(dynamoDBPage.isHomepage());
+        page.setExcludedGroups(dynamoDBPage.getExcludedGroups());
 
         if (dynamoDBPage.getSourceType() != null) {
             PageSource pageSource = new PageSource();
@@ -211,6 +212,7 @@ public class DynamoDBPageRepository implements PageRepository {
         dynamoDBPage.setPublished(page.isPublished());
         dynamoDBPage.setType(page.getType().name());
         dynamoDBPage.setHomepage(page.isHomepage());
+        dynamoDBPage.setExcludedGroups(page.getExcludedGroups());
 
         if (page.getSource() != null) {
             dynamoDBPage.setSourceType(page.getSource().getType());

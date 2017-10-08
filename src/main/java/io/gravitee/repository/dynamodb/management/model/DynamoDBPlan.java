@@ -55,6 +55,8 @@ public class DynamoDBPlan {
     @DynamoDBAttribute
     private String security;
     @DynamoDBAttribute
+    private List<String> excludedGroups;
+    @DynamoDBAttribute
     private long createdAt;
     @DynamoDBAttribute
     private long updatedAt;
@@ -148,6 +150,13 @@ public class DynamoDBPlan {
     }
     public void setSecurity(String security) {
         this.security = security;
+    }
+
+    public List<String> getExcludedGroups() {
+        return excludedGroups;
+    }
+    public void setExcludedGroups(List<String> excludedGroups) {
+        this.excludedGroups = excludedGroups;
     }
 
     public long getCreatedAt() {
