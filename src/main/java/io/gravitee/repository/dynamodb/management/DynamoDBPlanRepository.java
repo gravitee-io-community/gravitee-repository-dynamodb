@@ -134,6 +134,7 @@ public class DynamoDBPlanRepository implements PlanRepository {
         plan.setApis(dynamoDBPlan.getApis());
         plan.setDescription(dynamoDBPlan.getDescription());
         plan.setDefinition(dynamoDBPlan.getDefinition());
+        plan.setExcludedGroups(dynamoDBPlan.getExcludedGroups());
 
         if (dynamoDBPlan.getValidation() != null) {
             plan.setValidation(Plan.PlanValidationType.valueOf(dynamoDBPlan.getValidation()));
@@ -169,7 +170,7 @@ public class DynamoDBPlanRepository implements PlanRepository {
         DynamoDBPlan dynamoDBPlan = new DynamoDBPlan();
         dynamoDBPlan.setId(plan.getId());
         dynamoDBPlan.setName(plan.getName());
-        dynamoDBPlan.setOrder(dynamoDBPlan.getOrder());
+        dynamoDBPlan.setOrder(plan.getOrder());
 
         if (plan.getType() != null) {
             dynamoDBPlan.setType(plan.getType().name());
@@ -184,6 +185,7 @@ public class DynamoDBPlanRepository implements PlanRepository {
         }
         dynamoDBPlan.setDescription(plan.getDescription());
         dynamoDBPlan.setDefinition(plan.getDefinition());
+        dynamoDBPlan.setExcludedGroups(plan.getExcludedGroups());
 
         if (plan.getValidation() != null) {
             dynamoDBPlan.setValidation(plan.getValidation().name());

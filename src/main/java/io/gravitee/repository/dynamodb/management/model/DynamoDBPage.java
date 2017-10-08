@@ -20,6 +20,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL;
@@ -65,6 +66,9 @@ public class DynamoDBPage {
     @DynamoDBAttribute(attributeName = "homepage")
     @DynamoDBTyped(BOOL)
     private boolean homepage;
+
+    @DynamoDBAttribute
+    private List<String> excludedGroups;
 
     public String getId() {
         return id;
@@ -169,6 +173,14 @@ public class DynamoDBPage {
     }
     public void setHomepage(boolean homepage) {
         this.homepage = homepage;
+    }
+
+    public List<String> getExcludedGroups() {
+        return excludedGroups;
+    }
+
+    public void setExcludedGroups(List<String> excludedGroups) {
+        this.excludedGroups = excludedGroups;
     }
 
     @Override
