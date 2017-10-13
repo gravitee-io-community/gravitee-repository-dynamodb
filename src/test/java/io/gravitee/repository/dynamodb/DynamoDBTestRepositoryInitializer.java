@@ -122,7 +122,8 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                         new GlobalSecondaryIndex().
                                 withIndexName("ApiKeyPlan").
                                 withKeySchema(
-                                        new KeySchemaElement().withAttributeName("plan").withKeyType(KeyType.HASH)
+                                        new KeySchemaElement().withAttributeName("plan").withKeyType(KeyType.HASH),
+                                        new KeySchemaElement().withAttributeName("updatedAt").withKeyType(KeyType.RANGE)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
                                 withProvisionedThroughput(DynamoDBGraviteeSchema.APIKEY_PRO_THROU)

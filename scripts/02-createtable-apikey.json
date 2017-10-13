@@ -3,7 +3,9 @@
   "AttributeDefinitions": [
     { "AttributeName": "key", "AttributeType": "S" },
     { "AttributeName": "subscription", "AttributeType": "S" },
-    { "AttributeName": "plan", "AttributeType": "S" }
+    { "AttributeName": "plan", "AttributeType": "S" },
+    { "AttributeName": "updatedAt", "AttributeType": "N" }
+
   ],
   "KeySchema": [
     { "AttributeName": "key", "KeyType": "HASH" }
@@ -27,7 +29,8 @@
     {
       "IndexName": "ApiKeyPlan",
       "KeySchema": [
-        { "AttributeName": "plan", "KeyType": "HASH" }
+        { "AttributeName": "plan", "KeyType": "HASH" },
+        { "AttributeName": "updatedAt", "KeyType": "RANGE" }
       ],
       "Projection": { "ProjectionType": "ALL" },
       "ProvisionedThroughput": {

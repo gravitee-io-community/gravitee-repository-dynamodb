@@ -23,16 +23,16 @@ import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import io.gravitee.repository.dynamodb.management.model.DynamoDBApiKey;
 import io.gravitee.repository.exceptions.TechnicalException;
 import io.gravitee.repository.management.api.ApiKeyRepository;
+import io.gravitee.repository.management.api.search.ApiKeyCriteria;
 import io.gravitee.repository.management.model.ApiKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * @author David BRASSELY (david.brassely at graviteesource.com)
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
@@ -107,6 +107,35 @@ public class DynamoDBApiKeyRepository implements ApiKeyRepository{
                 stream().
                 map(this::convert).
                 collect(Collectors.toSet());
+    }
+
+    @Override
+    public List<ApiKey> findByCriteria(ApiKeyCriteria filter) throws TechnicalException {
+        DynamoDBQueryExpression<DynamoDBApiKey> queryExpression = new DynamoDBQueryExpression<>();
+
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":plans", new AttributeValue().withSS(filter.getPlans()));
+        eav.put(":revoked", new AttributeValue().withBOOL(filter.isIncludeRevoked()));
+
+        if (filter.getFrom() == 0 || filter.getFrom() == 0) {
+            queryExpression.
+                    withKeyConditionExpression("#p IN :plans");
+        } else {
+            eav.put(":from", new AttributeValue().withN(Long.toString(filter.getFrom())));
+            eav.put(":to", new AttributeValue().withN(Long.toString(filter.getTo())));
+            queryExpression.
+                    withKeyConditionExpression("#p IN :plans and updatedAt between :from and :to");
+        }
+
+        return mapper.query(DynamoDBApiKey.class,
+                queryExpression.
+                        withFilterExpression("revoked = :revoked").
+                        withExpressionAttributeValues(eav).
+                        withExpressionAttributeNames(Collections.singletonMap("#p", "plan")).
+                        withConsistentRead(false)).
+                stream().
+                map(this::convert).
+                collect(Collectors.toList());
     }
 
     private ApiKey convert(DynamoDBApiKey dynamoDBApiKey) {
