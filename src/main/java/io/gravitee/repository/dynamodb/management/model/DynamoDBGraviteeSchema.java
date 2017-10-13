@@ -59,6 +59,9 @@ public interface DynamoDBGraviteeSchema {
     //ApiKeys
     String APIKEY_TABLENAME = prefix + "ApiKey";
     ProvisionedThroughput APIKEY_PRO_THROU = new ProvisionedThroughput(5L, 5L);
+    //ApiKeySearchIndexes
+    String APIKEY_SEARCH_INDEX_TABLENAME = prefix + "ApiKeySearchIndex";
+    ProvisionedThroughput APIKEY_SEARCH_INDEX_PRO_THROU = new ProvisionedThroughput(5L, 5L);
     //Events
     String EVENT_TABLENAME = prefix + "Event";
     ProvisionedThroughput EVENT_PRO_THROU = new ProvisionedThroughput(5L, 5L);
