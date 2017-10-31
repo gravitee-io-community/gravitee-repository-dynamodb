@@ -15,9 +15,7 @@
  */
 package io.gravitee.repository.dynamodb.management;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBSaveExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import io.gravitee.repository.dynamodb.management.model.DynamoDBApiKey;
@@ -111,25 +109,40 @@ public class DynamoDBApiKeyRepository implements ApiKeyRepository{
 
     @Override
     public List<ApiKey> findByCriteria(ApiKeyCriteria filter) throws TechnicalException {
-        DynamoDBQueryExpression<DynamoDBApiKey> queryExpression = new DynamoDBQueryExpression<>();
-
-        Map<String, AttributeValue> eav = new HashMap<>();
-        eav.put(":plans", new AttributeValue().withSS(filter.getPlans()));
-        eav.put(":revoked", new AttributeValue().withBOOL(filter.isIncludeRevoked()));
-
-        if (filter.getFrom() == 0 || filter.getFrom() == 0) {
-            queryExpression.
-                    withKeyConditionExpression("#p IN :plans");
-        } else {
-            eav.put(":from", new AttributeValue().withN(Long.toString(filter.getFrom())));
-            eav.put(":to", new AttributeValue().withN(Long.toString(filter.getTo())));
-            queryExpression.
-                    withKeyConditionExpression("#p IN :plans and updatedAt between :from and :to");
+        if (filter.getPlans() == null || filter.getPlans().isEmpty()) {
+            return Collections.emptyList();
         }
 
-        return mapper.query(DynamoDBApiKey.class,
-                queryExpression.
-                        withFilterExpression("revoked = :revoked").
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        Map<String, AttributeValue> eav = new HashMap<>();
+        StringJoiner filterExpression = new StringJoiner(" and ");
+
+        //plan Ids
+        int i = 0;
+        StringJoiner planIds = new StringJoiner(",");
+        for (String plan : filter.getPlans()) {
+            String planAttr = ":plan" + (i++);
+            eav.put(planAttr, new AttributeValue().withS(plan));
+            planIds.add(planAttr);
+        }
+        filterExpression.add("#p in (" + planIds.toString() + ")");
+
+        // time range
+        if (filter.getFrom() != 0 && filter.getFrom() != 0) {
+
+            eav.put(":from", new AttributeValue().withN(Long.toString(filter.getFrom())));
+            eav.put(":to", new AttributeValue().withN(Long.toString(filter.getTo())));
+            filterExpression.add("updatedAt between :from and :to");
+        }
+
+        // revoked
+        if (!filter.isIncludeRevoked()) {
+            eav.put(":revoked", new AttributeValue().withBOOL(filter.isIncludeRevoked()));
+            filterExpression.add("revoked = :revoked");
+        }
+        return mapper.scan(DynamoDBApiKey.class,
+                scanExpression.
+                        withFilterExpression(filterExpression.toString()).
                         withExpressionAttributeValues(eav).
                         withExpressionAttributeNames(Collections.singletonMap("#p", "plan")).
                         withConsistentRead(false)).

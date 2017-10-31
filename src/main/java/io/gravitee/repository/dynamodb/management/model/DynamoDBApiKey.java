@@ -19,6 +19,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 
 import java.util.Objects;
 
+import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL;
+
 /**
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
@@ -39,7 +41,7 @@ public class DynamoDBApiKey {
     private long createdAt;
     @DynamoDBIndexRangeKey(globalSecondaryIndexName = "ApiKeyPlan")
     private long updatedAt;
-    @DynamoDBAttribute
+    @DynamoDBTyped(BOOL)
     private boolean revoked;
     @DynamoDBAttribute
     private long revokeAt;
