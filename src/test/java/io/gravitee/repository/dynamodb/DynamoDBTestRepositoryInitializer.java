@@ -24,7 +24,8 @@ import io.gravitee.repository.dynamodb.management.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
-import java.util.Collections;
+
+import static java.util.Collections.singletonList;
 
 /**
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com)
@@ -86,7 +87,7 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBApplication.class).
                 withProvisionedThroughput(DynamoDBGraviteeSchema.APPLICATION_PRO_THROU).
-                withGlobalSecondaryIndexes(Collections.singletonList(
+                withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("ApplicationStatus").
                                 withKeySchema(
@@ -99,7 +100,7 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBApi.class).
                 withProvisionedThroughput(DynamoDBGraviteeSchema.API_PRO_THROU).
-                withGlobalSecondaryIndexes(Collections.singletonList(
+                withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("ApiVisibility").
                                 withKeySchema(
@@ -131,7 +132,7 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBEvent.class).
                 withProvisionedThroughput(DynamoDBGraviteeSchema.EVENT_PRO_THROU).
-                withGlobalSecondaryIndexes(Collections.singletonList(
+                withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("EventKeyAndUpdateDate").
                                 withKeySchema(
@@ -147,7 +148,7 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBMetadata.class).
                 withProvisionedThroughput(DynamoDBGraviteeSchema.METADATA_PRO_THROU).
-                withGlobalSecondaryIndexes(Collections.singletonList(
+                withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("Reference").
                                 withKeySchema(
@@ -160,7 +161,7 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBRole.class).
                 withProvisionedThroughput(DynamoDBGraviteeSchema.ROLE_PRO_THROU).
-                withGlobalSecondaryIndexes(Collections.singletonList(
+                withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("RoleScope").
                                 withKeySchema(
@@ -168,6 +169,31 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
                                 withProvisionedThroughput(DynamoDBGraviteeSchema.ROLE_PRO_THROU)
+                )));
+        TableUtils.createTableIfNotExists(dynamo, mapper.
+                generateCreateTableRequest(DynamoDBRating.class).
+                withProvisionedThroughput(DynamoDBGraviteeSchema.RATING_PRO_THROU).
+                withGlobalSecondaryIndexes(singletonList(
+                        new GlobalSecondaryIndex().
+                                withIndexName("RatingApiAndUser").
+                                withKeySchema(
+                                        new KeySchemaElement().withAttributeName("api").withKeyType(KeyType.HASH),
+                                        new KeySchemaElement().withAttributeName("user").withKeyType(KeyType.RANGE)
+                                ).
+                                withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
+                                withProvisionedThroughput(DynamoDBGraviteeSchema.RATING_PRO_THROU)
+                )));
+        TableUtils.createTableIfNotExists(dynamo, mapper.
+                generateCreateTableRequest(DynamoDBRatingAnswer.class).
+                withProvisionedThroughput(DynamoDBGraviteeSchema.RATING_ANSWER_PRO_THROU).
+                withGlobalSecondaryIndexes(singletonList(
+                        new GlobalSecondaryIndex().
+                                withIndexName("RatingAnswer").
+                                withKeySchema(
+                                        new KeySchemaElement().withAttributeName("rating").withKeyType(KeyType.HASH)
+                                ).
+                                withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
+                                withProvisionedThroughput(DynamoDBGraviteeSchema.RATING_ANSWER_PRO_THROU)
                 )));
     }
 
@@ -188,5 +214,7 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
         TableUtils.deleteTableIfExists(dynamo, mapper.generateDeleteTableRequest(DynamoDBEventSearchIndex.class));
         TableUtils.deleteTableIfExists(dynamo, mapper.generateDeleteTableRequest(DynamoDBMetadata.class));
         TableUtils.deleteTableIfExists(dynamo, mapper.generateDeleteTableRequest(DynamoDBRole.class));
+        TableUtils.deleteTableIfExists(dynamo, mapper.generateDeleteTableRequest(DynamoDBRating.class));
+        TableUtils.deleteTableIfExists(dynamo, mapper.generateDeleteTableRequest(DynamoDBRatingAnswer.class));
     }
 }
