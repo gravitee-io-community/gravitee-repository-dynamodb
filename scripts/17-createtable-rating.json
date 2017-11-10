@@ -1,0 +1,31 @@
+{
+    "TableName": "GraviteeioApimRating",
+    "AttributeDefinitions": [
+        { "AttributeName": "id", "AttributeType": "S" },
+        { "AttributeName": "api", "AttributeType": "S" },
+        { "AttributeName": "user", "AttributeType": "S" }
+    ],
+    "KeySchema": [
+        { "AttributeName": "id", "KeyType": "HASH" }
+    ],
+    "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+    },
+    "GlobalSecondaryIndexes": [
+        {
+            "IndexName": "RatingApiAndUser",
+            "KeySchema": [
+                { "AttributeName": "api", "KeyType": "HASH" },
+                { "AttributeName": "user", "KeyType": "RANGE" }
+            ],
+            "Projection": {
+                "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 5,
+                "WriteCapacityUnits": 5
+            }
+        }
+    ]
+}

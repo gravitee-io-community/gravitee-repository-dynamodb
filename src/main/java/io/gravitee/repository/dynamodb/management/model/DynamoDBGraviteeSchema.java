@@ -74,4 +74,10 @@ public interface DynamoDBGraviteeSchema {
     //Roles
     String ROLE_TABLENAME = prefix + "Role";
     ProvisionedThroughput ROLE_PRO_THROU = new ProvisionedThroughput(5L, 5L);
+    //Rating
+    String RATING_TABLENAME = prefix + "Rating";
+    ProvisionedThroughput RATING_PRO_THROU = new ProvisionedThroughput(5L, 5L);
+    //Rating answer
+    String RATING_ANSWER_TABLENAME = prefix + "RatingAnswer";
+    ProvisionedThroughput RATING_ANSWER_PRO_THROU = new ProvisionedThroughput(5L, 5L);
 }
