@@ -195,6 +195,10 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
                                 withProvisionedThroughput(DynamoDBGraviteeSchema.RATING_ANSWER_PRO_THROU)
                 )));
+        TableUtils.createTableIfNotExists(dynamo, mapper.
+                generateCreateTableRequest(DynamoDBAudit.class).
+                withProvisionedThroughput(DynamoDBGraviteeSchema.AUDIT_PRO_THROU)
+        );
     }
 
     public void tearDown() {
@@ -216,5 +220,6 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
         TableUtils.deleteTableIfExists(dynamo, mapper.generateDeleteTableRequest(DynamoDBRole.class));
         TableUtils.deleteTableIfExists(dynamo, mapper.generateDeleteTableRequest(DynamoDBRating.class));
         TableUtils.deleteTableIfExists(dynamo, mapper.generateDeleteTableRequest(DynamoDBRatingAnswer.class));
+        TableUtils.deleteTableIfExists(dynamo, mapper.generateDeleteTableRequest(DynamoDBAudit.class));
     }
 }

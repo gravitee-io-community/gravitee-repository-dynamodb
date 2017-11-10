@@ -128,7 +128,7 @@ public class DynamoDBApiKeyRepository implements ApiKeyRepository{
         filterExpression.add("#p in (" + planIds.toString() + ")");
 
         // time range
-        if (filter.getFrom() != 0 && filter.getFrom() != 0) {
+        if (filter.getFrom() != 0 && filter.getTo() != 0) {
 
             eav.put(":from", new AttributeValue().withN(Long.toString(filter.getFrom())));
             eav.put(":to", new AttributeValue().withN(Long.toString(filter.getTo())));

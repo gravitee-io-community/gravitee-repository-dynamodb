@@ -117,6 +117,7 @@ public class DynamoDBRatingRepository implements RatingRepository {
                         new ExpectedAttributeValue().withExists(false)
                 )
         );
+
         return rating;
     }
 

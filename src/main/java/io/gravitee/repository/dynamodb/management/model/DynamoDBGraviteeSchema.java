@@ -80,4 +80,7 @@ public interface DynamoDBGraviteeSchema {
     //Rating answer
     String RATING_ANSWER_TABLENAME = prefix + "RatingAnswer";
     ProvisionedThroughput RATING_ANSWER_PRO_THROU = new ProvisionedThroughput(5L, 5L);
+    //Audits
+    String AUDIT_TABLENAME = prefix + "Audit";
+    ProvisionedThroughput AUDIT_PRO_THROU = new ProvisionedThroughput(5L, 5L);
 }
