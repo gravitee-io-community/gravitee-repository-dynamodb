@@ -18,8 +18,11 @@ package io.gravitee.repository.dynamodb.management.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
 
 import java.util.Objects;
+
+import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL;
 
 /**
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
@@ -34,6 +37,16 @@ public class DynamoDBView {
     private String name;
     @DynamoDBAttribute
     private String description;
+    @DynamoDBTyped(BOOL)
+    private boolean defaultView;
+    @DynamoDBTyped(BOOL)
+    private boolean hidden;
+    @DynamoDBAttribute
+    private int order;
+    @DynamoDBAttribute
+    private long createdAt;
+    @DynamoDBAttribute
+    private long updatedAt;
 
     public String getId() {
         return id;
@@ -54,6 +67,41 @@ public class DynamoDBView {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isDefaultView() {
+        return defaultView;
+    }
+    public void setDefaultView(boolean defaultView) {
+        this.defaultView = defaultView;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
