@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -118,6 +119,11 @@ public class DynamoDBViewRepository implements ViewRepository {
         view.setId(dynamoDBView.getId());
         view.setName(dynamoDBView.getName());
         view.setDescription(dynamoDBView.getDescription());
+        view.setDefaultView(dynamoDBView.isDefaultView());
+        view.setHidden(dynamoDBView.isHidden());
+        view.setOrder(dynamoDBView.getOrder());
+        view.setUpdatedAt(new Date(dynamoDBView.getUpdatedAt()));
+        view.setCreatedAt(new Date(dynamoDBView.getCreatedAt()));
         return view;
     }
 
@@ -129,6 +135,11 @@ public class DynamoDBViewRepository implements ViewRepository {
         dynamoDBView.setId(view.getId());
         dynamoDBView.setName(view.getName());
         dynamoDBView.setDescription(view.getDescription());
+        dynamoDBView.setDefaultView(view.isDefaultView());
+        dynamoDBView.setHidden(view.isHidden());
+        dynamoDBView.setOrder(view.getOrder());
+        dynamoDBView.setUpdatedAt(view.getUpdatedAt().getTime());
+        dynamoDBView.setCreatedAt(view.getCreatedAt().getTime());
         return dynamoDBView;
     }
 }
