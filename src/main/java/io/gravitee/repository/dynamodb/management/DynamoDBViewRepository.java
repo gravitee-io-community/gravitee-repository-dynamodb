@@ -138,8 +138,12 @@ public class DynamoDBViewRepository implements ViewRepository {
         dynamoDBView.setDefaultView(view.isDefaultView());
         dynamoDBView.setHidden(view.isHidden());
         dynamoDBView.setOrder(view.getOrder());
-        dynamoDBView.setUpdatedAt(view.getUpdatedAt().getTime());
-        dynamoDBView.setCreatedAt(view.getCreatedAt().getTime());
+        if (view.getUpdatedAt() != null) {
+            dynamoDBView.setUpdatedAt(view.getUpdatedAt().getTime());
+        }
+        if (view.getCreatedAt() != null) {
+            dynamoDBView.setCreatedAt(view.getCreatedAt().getTime());
+        }
         return dynamoDBView;
     }
 }
