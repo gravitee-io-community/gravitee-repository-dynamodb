@@ -28,7 +28,7 @@ import java.util.Objects;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.GROUP_TABLENAME)
+@DynamoDBTable(tableName = "Group")
 public class DynamoDBGroup {
     @DynamoDBHashKey
     private String id;

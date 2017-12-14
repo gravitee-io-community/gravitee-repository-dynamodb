@@ -26,7 +26,7 @@ import java.util.Set;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.EVENT_SEARCH_INDEX_TABLENAME)
+@DynamoDBTable(tableName = "EventSearchIndex")
 public class DynamoDBEventSearchIndex {
     @DynamoDBHashKey
     private String id;

@@ -26,7 +26,7 @@ import java.util.Objects;
  * @author Azize ELAMRANI (azize.elamrani at graviteesource.com)
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.RATING_ANSWER_TABLENAME)
+@DynamoDBTable(tableName = "RatingAnswer")
 public class DynamoDBRatingAnswer {
 
     @DynamoDBHashKey

@@ -25,7 +25,7 @@ import java.util.Objects;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.TENANT_TABLENAME)
+@DynamoDBTable(tableName = "Tenant")
 public class DynamoDBTenant {
 
     @DynamoDBHashKey

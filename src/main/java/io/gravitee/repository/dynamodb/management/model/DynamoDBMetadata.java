@@ -27,7 +27,7 @@ import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperField
  * @author GraviteeSource Team
  */
 
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.METADATA_TABLENAME)
+@DynamoDBTable(tableName = "Metadata")
 public class DynamoDBMetadata {
     @DynamoDBHashKey
     private String id;

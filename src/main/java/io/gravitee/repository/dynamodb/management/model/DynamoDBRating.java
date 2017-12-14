@@ -23,7 +23,7 @@ import java.util.Objects;
  * @author Azize ELAMRANI (azize.elamrani at graviteesource.com)
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.RATING_TABLENAME)
+@DynamoDBTable(tableName = "Rating")
 public class DynamoDBRating {
 
     @DynamoDBHashKey

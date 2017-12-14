@@ -26,7 +26,7 @@ import java.util.Set;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.PLAN_TABLENAME)
+@DynamoDBTable(tableName = "Plan")
 public class DynamoDBPlan {
     @DynamoDBHashKey
     private String id;

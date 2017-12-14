@@ -28,7 +28,7 @@ import java.util.Set;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.API_TABLENAME)
+@DynamoDBTable(tableName = "Api")
 public class DynamoDBApi {
 
     @DynamoDBHashKey

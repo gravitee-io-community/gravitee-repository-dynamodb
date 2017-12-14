@@ -28,7 +28,7 @@ import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperField
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.VIEW_TABLENAME)
+@DynamoDBTable(tableName = "View")
 public class DynamoDBView {
 
     @DynamoDBHashKey

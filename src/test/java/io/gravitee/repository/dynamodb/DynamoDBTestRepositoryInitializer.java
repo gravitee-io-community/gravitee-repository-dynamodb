@@ -39,30 +39,31 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
     private AmazonDynamoDB dynamo;
 
     public void setUp() {
+        ProvisionedThroughput DEFAULT_PRO_THROU = new ProvisionedThroughput(5L, 5L);
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBTenant.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.TENANT_PRO_THROU));
+                withProvisionedThroughput(DEFAULT_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBView.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.VIEW_PRO_THROU));
+                withProvisionedThroughput(DEFAULT_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBTag.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.TAG_PRO_THROU));
+                withProvisionedThroughput(DEFAULT_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBUser.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.USER_PRO_THROU));
+                withProvisionedThroughput(DEFAULT_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBSubscription.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.SUBSCRIPTION_PRO_THROU));
+                withProvisionedThroughput(DEFAULT_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBPlan.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.PLAN_PRO_THROU));
+                withProvisionedThroughput(DEFAULT_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBPage.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.PAGE_PRO_THROU));
+                withProvisionedThroughput(DEFAULT_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBMembership.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.MEMBERSHIP_PRO_THROU).
+                withProvisionedThroughput(DEFAULT_PRO_THROU).
                 withGlobalSecondaryIndexes(Arrays.asList(
                         new GlobalSecondaryIndex().
                                 withIndexName("UserAndReferenceType").
@@ -71,7 +72,7 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("referenceType").withKeyType(KeyType.RANGE)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.MEMBERSHIP_PRO_THROU),
+                                withProvisionedThroughput(DEFAULT_PRO_THROU),
                         new GlobalSecondaryIndex().
                                 withIndexName("ReferenceTypeAndId").
                                 withKeySchema(
@@ -79,14 +80,14 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("referenceType").withKeyType(KeyType.RANGE)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.MEMBERSHIP_PRO_THROU)
+                                withProvisionedThroughput(DEFAULT_PRO_THROU)
                         )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBGroup.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.GROUP_PRO_THROU));
+                withProvisionedThroughput(DEFAULT_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBApplication.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.APPLICATION_PRO_THROU).
+                withProvisionedThroughput(DEFAULT_PRO_THROU).
                 withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("ApplicationStatus").
@@ -94,12 +95,12 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("status").withKeyType(KeyType.HASH)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.APPLICATION_PRO_THROU)
+                                withProvisionedThroughput(DEFAULT_PRO_THROU)
 
                 )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBApi.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.API_PRO_THROU).
+                withProvisionedThroughput(DEFAULT_PRO_THROU).
                 withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("ApiVisibility").
@@ -107,11 +108,11 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("visibility").withKeyType(KeyType.HASH)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.API_PRO_THROU)
+                                withProvisionedThroughput(DEFAULT_PRO_THROU)
                 )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBApiKey.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.APIKEY_PRO_THROU).
+                withProvisionedThroughput(DEFAULT_PRO_THROU).
                 withGlobalSecondaryIndexes(Arrays.asList(
                         new GlobalSecondaryIndex().
                                 withIndexName("ApiKeySubscription").
@@ -119,7 +120,7 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("subscription").withKeyType(KeyType.HASH)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.APIKEY_PRO_THROU),
+                                withProvisionedThroughput(DEFAULT_PRO_THROU),
                         new GlobalSecondaryIndex().
                                 withIndexName("ApiKeyPlan").
                                 withKeySchema(
@@ -127,11 +128,11 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("updatedAt").withKeyType(KeyType.RANGE)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.APIKEY_PRO_THROU)
+                                withProvisionedThroughput(DEFAULT_PRO_THROU)
                 )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBEvent.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.EVENT_PRO_THROU).
+                withProvisionedThroughput(DEFAULT_PRO_THROU).
                 withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("EventKeyAndUpdateDate").
@@ -140,14 +141,14 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("updatedAt").withKeyType(KeyType.RANGE)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.APIKEY_PRO_THROU)
+                                withProvisionedThroughput(DEFAULT_PRO_THROU)
                 )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBEventSearchIndex.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.EVENT_SEARCH_INDEX_PRO_THROU));
+                withProvisionedThroughput(DEFAULT_PRO_THROU));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBMetadata.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.METADATA_PRO_THROU).
+                withProvisionedThroughput(DEFAULT_PRO_THROU).
                 withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("Reference").
@@ -156,11 +157,11 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("referenceId").withKeyType(KeyType.RANGE)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.METADATA_PRO_THROU)
+                                withProvisionedThroughput(DEFAULT_PRO_THROU)
                 )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBRole.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.ROLE_PRO_THROU).
+                withProvisionedThroughput(DEFAULT_PRO_THROU).
                 withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("RoleScope").
@@ -168,11 +169,11 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("scope").withKeyType(KeyType.HASH)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.ROLE_PRO_THROU)
+                                withProvisionedThroughput(DEFAULT_PRO_THROU)
                 )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBRating.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.RATING_PRO_THROU).
+                withProvisionedThroughput(DEFAULT_PRO_THROU).
                 withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("RatingApiAndUser").
@@ -181,11 +182,11 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("user").withKeyType(KeyType.RANGE)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.RATING_PRO_THROU)
+                                withProvisionedThroughput(DEFAULT_PRO_THROU)
                 )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBRatingAnswer.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.RATING_ANSWER_PRO_THROU).
+                withProvisionedThroughput(DEFAULT_PRO_THROU).
                 withGlobalSecondaryIndexes(singletonList(
                         new GlobalSecondaryIndex().
                                 withIndexName("RatingAnswer").
@@ -193,11 +194,11 @@ public class DynamoDBTestRepositoryInitializer implements TestRepositoryInitiali
                                         new KeySchemaElement().withAttributeName("rating").withKeyType(KeyType.HASH)
                                 ).
                                 withProjection(new Projection().withProjectionType(ProjectionType.ALL)).
-                                withProvisionedThroughput(DynamoDBGraviteeSchema.RATING_ANSWER_PRO_THROU)
+                                withProvisionedThroughput(DEFAULT_PRO_THROU)
                 )));
         TableUtils.createTableIfNotExists(dynamo, mapper.
                 generateCreateTableRequest(DynamoDBAudit.class).
-                withProvisionedThroughput(DynamoDBGraviteeSchema.AUDIT_PRO_THROU)
+                withProvisionedThroughput(DEFAULT_PRO_THROU)
         );
     }
 

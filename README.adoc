@@ -48,6 +48,8 @@ management:
     awsRegion: eu-west-2
     awsAccessKeyId: YOUR-ACCESS-KEY-ID
     awsSecretKey: YOUR-SECRET-ACCESS-KEY
+    #tablePrefix: GraviteeioApim
+
 ----
 
 Or you can use the default AWS credential mechanism to set options:
@@ -90,4 +92,16 @@ And configure your AWS CLI to use your local dynamodb :
 $ export AWS_ACCESS_KEY_ID=localdynamodb
 $ export AWS_SECRET_ACCESS_KEY=xxx
 $ aws dynamodb create-table --endpoint-url http://localhost:8000 --cli-input-json ...
+----
+
+=== How to prefix table names
+It could be useful to be able to manage different environment on the same DynamoDB Account.
+To achieve this goal, you can change the prefix of each table.
+[source, yaml]
+----
+management:
+  type: dynamodb
+  dynamodb:
+    tablePrefix: GraviteeioApim # the default prefix
+    ...
 ----

@@ -24,7 +24,7 @@ import java.util.Objects;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.EVENT_TABLENAME)
+@DynamoDBTable(tableName = "Event")
 public class DynamoDBEvent {
     @DynamoDBHashKey
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "EventKeyAndUpdateDate")
