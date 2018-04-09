@@ -23,7 +23,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.SUBSCRIPTION_TABLENAME)
+@DynamoDBTable(tableName = "Subscription")
 public class DynamoDBSubscription {
 
     @DynamoDBHashKey

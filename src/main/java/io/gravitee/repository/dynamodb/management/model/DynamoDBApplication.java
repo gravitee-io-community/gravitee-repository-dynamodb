@@ -27,7 +27,7 @@ import java.util.Set;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.APPLICATION_TABLENAME)
+@DynamoDBTable(tableName = "Application")
 public class DynamoDBApplication {
     @DynamoDBHashKey
     private String id;

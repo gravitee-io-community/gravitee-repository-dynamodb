@@ -21,9 +21,11 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import io.gravitee.repository.Scope;
 import io.gravitee.repository.dynamodb.common.AbstractRepositoryConfiguration;
+import io.gravitee.repository.dynamodb.common.CustomTableNameResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +92,10 @@ public class ManagementRepositoryConfiguration extends AbstractRepositoryConfigu
 
     @Bean
     public DynamoDBMapper dynamoDBMapper() {
-        return new DynamoDBMapper(amazonDynamoDB());
+        String tablePrefix = readPropertyValue(propertyPrefix + "tablePrefix");
+        return new DynamoDBMapper(
+                amazonDynamoDB(),
+                new CustomTableNameResolver(tablePrefix).config());
     }
 
     @Bean

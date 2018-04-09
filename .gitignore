@@ -21,3 +21,4 @@ target/
 .settings/
 .project
 native-libs
+scripts/node_modules/

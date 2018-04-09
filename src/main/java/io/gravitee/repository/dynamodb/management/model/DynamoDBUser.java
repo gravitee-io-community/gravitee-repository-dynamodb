@@ -27,7 +27,7 @@ import java.util.Set;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.USER_TABLENAME)
+@DynamoDBTable(tableName = "User")
 public class DynamoDBUser {
     @DynamoDBHashKey
     private String username;

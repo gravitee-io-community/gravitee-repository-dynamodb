@@ -30,7 +30,7 @@ import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperField
  * @author GraviteeSource Team
  */
 
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.PAGE_TABLENAME)
+@DynamoDBTable(tableName = "Page")
 public class DynamoDBPage {
 
     @DynamoDBHashKey

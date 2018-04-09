@@ -24,7 +24,7 @@ import java.util.Objects;
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.AUDIT_TABLENAME)
+@DynamoDBTable(tableName = "Audit")
 public class DynamoDBAudit {
     @DynamoDBHashKey
     private String id;

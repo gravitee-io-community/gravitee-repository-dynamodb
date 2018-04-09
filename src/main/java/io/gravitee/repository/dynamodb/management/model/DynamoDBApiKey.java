@@ -25,7 +25,7 @@ import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperField
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com) 
  * @author GraviteeSource Team
  */
-@DynamoDBTable(tableName = DynamoDBGraviteeSchema.APIKEY_TABLENAME)
+@DynamoDBTable(tableName = "ApiKey")
 public class DynamoDBApiKey {
     @DynamoDBHashKey
     private String key;
